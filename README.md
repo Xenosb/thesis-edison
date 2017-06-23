@@ -1,17 +1,19 @@
-# Thesis edison
+# Smartbed Edison
 
 
 
 ## Requirements
 
+To get the project up and running, you will need to install some basic prerequisites. Depending if you are developing just the web part on client machine or testing integration on Edison, you will have to configure the system differently. 
+
 On fedora
-```
+```sh
 sudo dnf install python python-pip python-devel nginx postgresql gcc
 sudo pip install uwsgi flask plim
 ```
 
 On ubuntu/debian
-```
+```sh
 sudo apt update
 sudo apt install
 sudo pip install uwsgi flask plim
@@ -20,7 +22,7 @@ sudo pip install uwsgi flask plim
 ## Setup
 
 ```/etc/systemd/system/smartbed.service```
-```
+```sh
 [Unit]
 Description=Smartbed uWSGI Service
 
@@ -33,7 +35,7 @@ ExecStart=/usr/bin/bash -c 'cd $SMARTBED_DIR/app; uwsgi --ini $SMARTBED_DIR/app/
 WantedBy=multi-user.target
 ```
 
-```
+```sh
 mkdir -p /var/sites/smartbed/logs
 mkdir -p /run/uwsgi
 mkdir -p /etc/nginx/sites-available
@@ -49,7 +51,7 @@ server_names_hash_bucket_size 64;
 Take care to replace *<SMARTBED_DIR>* with absolute path to directory.
 
 ```/etc/nginx/sites-available/smartbed.conf```
-```
+```Nginx
 server {
     listen 80 default_server;
     server_name smartbed;
