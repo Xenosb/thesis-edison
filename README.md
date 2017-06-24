@@ -9,14 +9,14 @@ To get the project up and running, you will need to install some basic prerequis
 On fedora
 ```sh
 sudo dnf install python python-pip python-devel nginx postgresql gcc
-sudo pip install uwsgi flask plim
+sudo pip install uwsgi flask plim flask_sqlalchemy
 ```
 
 On ubuntu/debian
 ```sh
 sudo apt update
 sudo apt install
-sudo pip install uwsgi flask plim
+sudo pip install uwsgi flask psycopg2 flask_migrate flask_script flask_sqlalchemy
 ```
 
 ## Setup
