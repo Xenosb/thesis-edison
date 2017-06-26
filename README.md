@@ -83,3 +83,8 @@ server {
     }
 }
 ```
+
+## Credits
+
+Frontend is based on CoreUI by mrholek
+https://github.com/mrholek/CoreUI-Free-Bootstrap-Admin-Template
