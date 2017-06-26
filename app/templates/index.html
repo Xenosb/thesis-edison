@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block body %}
+
+<script type=text/javascript>
+  setInterval(ajax_refresh_sensor_values(), 300);
+</script>
+
 <div>
   Sensor: <span id='s1-val'>0</span>
 </div>
