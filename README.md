@@ -9,7 +9,7 @@ To get the project up and running, you will need to install some basic prerequis
 On fedora
 ```sh
 sudo dnf install python python-pip python-devel nginx postgresql gcc
-sudo pip install uwsgi flask plim flask_sqlalchemy
+sudo pip install uwsgi flask psycopg2 flask_migrate flask_script flask_sqlalchemy
 ```
 
 On ubuntu/debian
@@ -27,8 +27,8 @@ sudo pip install uwsgi flask psycopg2 flask_migrate flask_script flask_sqlalchem
 Description=Smartbed uWSGI Service
 
 [Service]
-Environment="SMARTBED_DIR=/home/xeon/workspace_thesis/thesis-edison"
-ExecStartPre=/usr/bin/bash -c 'mkdir -p /run/uwsgi; chown xeon:nginx /run/uwsgi'
+Environment="SMARTBED_DIR=/var/www/thesis-edison"
+ExecStartPre=/usr/bin/bash -c 'mkdir -p /run/uwsgi; chown <user>:nginx /run/uwsgi'
 ExecStart=/usr/bin/bash -c 'cd $SMARTBED_DIR/app; uwsgi --ini $SMARTBED_DIR/app/smartbed.ini;'
 
 [Install]
@@ -49,6 +49,7 @@ server_names_hash_bucket_size 64;
 ```
 
 Take care to replace *<SMARTBED_DIR>* with absolute path to directory.
+Also, make sure that all directories in the path have execute permission.
 
 ```/etc/nginx/sites-available/smartbed.conf```
 ```Nginx
