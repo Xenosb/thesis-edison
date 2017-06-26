@@ -4,8 +4,10 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import JSON
 
 '''
+========NODE=========
 id          - Integer
 sensors     - ForeignKey(Sensor)
+=====================
 '''
 class Node(db.Model):
   __tablename__ = 'node'
@@ -18,13 +20,21 @@ class Node(db.Model):
 
   def __repr__(self):
     return 'Node<id {}>'.format(self.id)
+  
+  def serialize(self):
+    return {
+      'id:': self.id,
+      'sensors:': [s.id for s in self.sensors]
+    }
 
 
 '''
+=======SENSOR========
 id          - Integer
 node_id     - ForeignKey(Node)
 position    - Integer
 last_value  - Integer
+=====================
 '''
 class Sensor(db.Model):
   __tablename__ = 'sensor'
@@ -33,35 +43,53 @@ class Sensor(db.Model):
   node_id = Column(Integer, ForeignKey('node.id'))
   position = Column(Integer())
   last_value = Column(Integer())
-  values = db.relationship('SensorValue', backref='Sensor', lazy='dynamic')
+  values = db.relationship('SensorValue')
 
-  def __init__(self, node_id, position, last_value):
+  def __init__(self, node_id, position):
     self.node_id = node_id
     self.position = position
     self.last_value = 0
   
   def __repr__(self):
-    return 'Sensor<id {} node{} position{}>'.format(self.id, self.node, self.position)
+    return 'Sensor<id {} node {} position {}>'.format(self.id, self.node.id, self.position)
 
+  def serialize(self):
+    return {
+      'id:': self.id,
+      'node_id:': self.node.id,
+      'position:': self.position,
+      'last_value:': self.last_value
+    }
 
 
 '''
+====SENSOR VALUE=====
 id          - Integer
 sensor_id   - ForeignKey(Node)
 value       - Integer
 timestamp   - DateTime
+=====================
 '''
-class SenosrValue(db.Model):
+class SensorValue(db.Model):
   __tablename__ = 'sensorValue'
 
   id = Column(Integer, primary_key=True)
-  sensor_id = db.Column(Integer, db.ForeignKey('sensor.id'))
+  sensor_id = Column(Integer, ForeignKey('sensor.id'))
   value = Column(Integer())
   timestamp = Column(DateTime(), default=datetime.utcnow)
 
   def __init__(self, sensor_id, value):
     self.sensor_id = sensor_id
     self.value = value
+    self.sensor.last_value = self.value
   
   def __repr__(self):
-    return 'Reading<node{} position{} value{}>'.format(self.id, self.sensor.node, self.position, self.value)
+    return 'Reading<id {} node {} position {} value {} time {}>'.format(self.id, self.sensor.node.id, self.sensor.position, self.value, self.timestamp)
+  
+  def serialize(self):
+    return {
+      'id:': self.id,
+      'sensor_id:': self.sensor.id,
+      'value:': self.value,
+      'timestamp:': self.timestamp
+    }

@@ -84,6 +84,12 @@ server {
 }
 ```
 
+Add user to database
+```sql
+create database smartbed;
+create role root with superuser, login;
+```
+
 ## Credits
 
 Frontend is based on CoreUI by mrholek
