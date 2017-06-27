@@ -23,8 +23,8 @@ class Node(db.Model):
   
   def serialize(self):
     return {
-      'id:': self.id,
-      'sensors:': [s.id for s in self.sensors]
+      'id': self.id,
+      'sensors': [s.id for s in self.sensors]
     }
 
 
@@ -55,10 +55,10 @@ class Sensor(db.Model):
 
   def serialize(self):
     return {
-      'id:': self.id,
-      'node_id:': self.node.id,
-      'position:': self.position,
-      'last_value:': self.last_value
+      'id': self.id,
+      'node_id': self.node.id,
+      'position': self.position,
+      'last_value': self.last_value
     }
 
 
@@ -88,8 +88,8 @@ class SensorValue(db.Model):
   
   def serialize(self):
     return {
-      'id:': self.id,
-      'sensor_id:': self.sensor.id,
-      'value:': self.value,
-      'timestamp:': self.timestamp
+      'id': self.id,
+      'sensor_id': self.sensor.id,
+      'value': self.value,
+      'timestamp': self.timestamp
     }
