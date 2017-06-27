@@ -3,11 +3,8 @@ function ajax_set_sensor_value(data) {
 }
 
 function ajax_get_sensor_value(sensor_id) {
-  $.getJSON(
-    '/api/node',
-    {id: sensor_id},
-    ajax_set_sensor_value(data)
-  )
+  sensor_url = 'api/node?id=' + sensor_id;
+  $('#s1-val').load(sensor_url);
 }
 
 function ajax_refresh_sensor_values() {
