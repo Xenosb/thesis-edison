@@ -1,18 +1,20 @@
 from flask import render_template, jsonify, request, abort
-from app import flask_app
+from app import flask_app, redis_store, celery
 from models import *
-
+from tasks import *
 
 # Error handlers
 @flask_app.errorhandler(404)
 def page_not_found(e):
-    return flask_app.send_static_file('404.html')
+  return flask_app.send_static_file('404.html')
 
 
 # Frontend routes
 @flask_app.route('/')
 @flask_app.route('/index')
 def index():
+  id = t_add.delay(1,5)
+  print(id)
   return render_template('index.html')
 
 @flask_app.route('/about')
@@ -23,8 +25,10 @@ def about():
 # API
 @flask_app.route('/api/node')
 def api_node():
-  r_node_id = request.args.get('id', 0, type=int)
-  return jsonify(result=Node.query.filter_by(id=int(r_node_id)).first().serialize())
+  #r_node_id = request.args.get('id', 0, type=int)
+  r_node_id = request.args.get('id', 0)
+  #return jsonify(result=Node.query.filter_by(id=int(r_node_id)).first().serialize())
+  return "%i" % t_add.AsyncResult(r_node_id).get()
 
 @flask_app.route('/api/sensor')
 def api_sensor():

@@ -8,15 +8,15 @@ To get the project up and running, you will need to install some basic prerequis
 
 On fedora
 ```sh
-sudo dnf install python python-pip python-devel nginx postgresql gcc
-sudo pip install uwsgi flask psycopg2 flask_migrate flask_script flask_sqlalchemy
+sudo dnf install python python-pip python-devel nginx postgresql gcc redis
+sudo pip install uwsgi psycopg2 flask flask-migrate flask-script flask-sqlalchemy flask-redis celery
 ```
 
 On ubuntu/debian
 ```sh
 sudo apt update
 sudo apt install
-sudo pip install uwsgi flask psycopg2 flask_migrate flask_script flask_sqlalchemy
+sudo pip install uwsgi psycopg2 flask flask-migrate flask-script flask-sqlalchemy flask-redis celery
 ```
 
 ## Setup
