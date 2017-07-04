@@ -24,10 +24,11 @@ class SensorReader(Process):
     self.read_f = self.mock_read_sensors
 
     if self.edison:
-      from mraa import I2c      
+      from mraa import I2c
       self.i2c = I2c(0)
       self.i2c.frequency(0)
-      self.read_f = i2c_read_sensors
+      self.i2c.address(0x10)
+      self.read_f = self.i2c_read_sensors
     else:
       #self.purge_db() # Comment if you want data to persist, bear in mind that auto_id is not reset
       if len(SensorValue.query.all()) == 0:
@@ -66,8 +67,44 @@ class SensorReader(Process):
   Reads data from actual I2C network. Available only on mraa devices.
   '''
   def i2c_read_sensors(self):
-    print('i2c')
+    from struct import unpack
 
+    success = False
+
+    while True:
+      self.i2c.writeReg(0xaa, 2)
+      try:
+        values = self.i2c.readBytesReg(0xa0,32)
+        for i in range(16):
+          res = unpack('H',values[2*i:2*i+2])[0]
+	  if res < 65000:
+            sensor = Sensor.query.filter_by(position=i).filter_by(node_id=1).first()
+            reading = SensorValue(sensor.id,res)
+            sensor.last_value = reading.value
+            sensor.last_update = datetime.now()
+            node = sensor.node
+            node.last_update = datetime.now()
+            db.session.add(reading)
+            db.session.add(sensor)
+            db.session.add(node)
+            db.session.commit()
+            print reading
+            success = True
+          else:
+            sensor = Sensor.query.filter_by(position=i).filter_by(node_id=1).first()
+            reading = SensorValue(sensor.id,65000)
+            sensor.last_value = reading.value
+            sensor.last_update = datetime.now()
+            node = sensor.node
+            node.last_update = datetime.now()
+            db.session.add(reading)
+            db.session.add(sensor)
+            db.session.add(node)
+            db.session.commit()
+        if success:
+          return
+      except IOError:
+        sleep(0.01)
 
   '''
   Clears the database. Useful for debug.
