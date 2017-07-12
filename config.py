@@ -22,3 +22,5 @@ class ClientProductionConfig(Config):
 class ClientTestConfig(Config):
   DEBUG = True
   EDISON = False
+
+config_s = ClientTestConfig

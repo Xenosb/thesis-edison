@@ -1,5 +1,5 @@
 from flask import render_template, jsonify, request, abort
-from app import flask_app, redis_store, celery
+from app import flask_app
 from models import *
 from tasks import *
 
@@ -13,8 +13,8 @@ def page_not_found(e):
 @flask_app.route('/')
 @flask_app.route('/index')
 def index():
-  id = t_add.delay(1,5)
-  print(id)
+  #id = t_add.delay(1,5)
+  #print(id)
   return render_template('index.html')
 
 @flask_app.route('/about')
