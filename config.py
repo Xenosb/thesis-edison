@@ -6,6 +6,7 @@ class Config(object):
   REDIS_URL = "redis://localhost:6379/0"
   CELERY_BROKER_URL = 'redis://localhost:6379/0'
   CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+  UPDATE_FREQ = 0.1
 
 class EdisonProductionConfig(Config):
   DEBUG = False
@@ -18,9 +19,11 @@ class EdisonTestConfig(Config):
 class ClientProductionConfig(Config):
   DEBUG = False
   EDISON = False
+  SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/smartbed-prod'
 
 class ClientTestConfig(Config):
   DEBUG = True
   EDISON = False
+  SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/smartbed-test'
 
 config_s = ClientTestConfig

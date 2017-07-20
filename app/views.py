@@ -13,8 +13,6 @@ def page_not_found(e):
 @flask_app.route('/')
 @flask_app.route('/index')
 def index():
-  #id = t_add.delay(1,5)
-  #print(id)
   return render_template('index.html')
 
 @flask_app.route('/about')
