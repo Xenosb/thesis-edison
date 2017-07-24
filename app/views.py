@@ -1,7 +1,6 @@
 from flask import render_template, jsonify, request, abort
 from app import flask_app
 from models import *
-from tasks import *
 
 # Error handlers
 @flask_app.errorhandler(404)
@@ -24,11 +23,15 @@ def about():
 @flask_app.route('/api/node')
 def api_node():
   #r_node_id = request.args.get('id', 0, type=int)
-  r_node_id = request.args.get('id', 0)
+  #r_node_id = request.args.get('id', 0)
   #return jsonify(result=Node.query.filter_by(id=int(r_node_id)).first().serialize())
-  return "%i" % t_add.AsyncResult(r_node_id).get()
+  #return "%i" % t_add.AsyncResult(r_node_id).get()
+  return 'a'
 
 @flask_app.route('/api/sensor')
 def api_sensor():
   r_sensor_id = request.args.get('id', 0, type=int)
-  return jsonify(result=Sensor.query.filter_by(id=int(r_sensor_id)).first().serialize())
+  try:
+    return jsonify(result=Sensor.query.filter_by(id=int(r_sensor_id)).first().serialize())
+  except:
+    return 'Sensor not available'

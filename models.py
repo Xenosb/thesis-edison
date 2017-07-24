@@ -81,7 +81,6 @@ class SensorValue(db.Model):
   def __init__(self, sensor_id, value):
     self.sensor_id = sensor_id
     self.value = value
-    self.sensor.last_value = self.value
   
   def __repr__(self):
     return 'Reading<id {} node {} position {} value {} time {}>'.format(self.id, self.sensor.node.id, self.sensor.position, self.value, self.timestamp)
