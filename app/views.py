@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, request, abort
+from flask import render_template, jsonify, request, abort, Response
 from app import flask_app
 from models import *
 
@@ -18,15 +18,19 @@ def index():
 def about():
   return render_template('about.html')
 
+# API routes
+@flask_app.route('/api/system')
+def api_system():
+  all_nodes = Node.query.all()
+  sys = System()
+  for node in all_nodes:
+    sys.add_node(node)
+  return jsonify(sys.serialize())
 
-# API
 @flask_app.route('/api/node')
 def api_node():
-  #r_node_id = request.args.get('id', 0, type=int)
-  #r_node_id = request.args.get('id', 0)
-  #return jsonify(result=Node.query.filter_by(id=int(r_node_id)).first().serialize())
-  #return "%i" % t_add.AsyncResult(r_node_id).get()
-  return 'a'
+  r_node_id = request.args.get('id', 0, type=int)
+  return jsonify(result=Node.query.filter_by(id=int(r_node_id)).first().serialize())
 
 @flask_app.route('/api/sensor')
 def api_sensor():

@@ -3,6 +3,24 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import JSON
 
+class System(): # Note that his is not a db table but just a helper class
+  def __init__(self):
+    self.nodes = []
+
+  def add_node(self, node):
+    self.nodes.append([node])
+
+  def serialize(self):
+    result = {
+      'size': len(self.nodes)
+      }
+    for node in self.nodes:
+      result[node[0].id] = node[0].serialize()
+    
+    print result
+    return result
+
+
 '''
 ========NODE=========
 id          - Integer

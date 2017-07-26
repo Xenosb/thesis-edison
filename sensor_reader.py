@@ -91,13 +91,14 @@ class SensorReader(Process):
     for i in range(n_nodes):
       node = Node()
       self.db.session.add(node)
+      self.db.session.commit()
 
       for j in range(n_sensors):
         sensor = Sensor(node_id = node.id, position = j)
         self.db.session.add(sensor)
+        self.db.session.commit()
       
         for k in range(n_samples):
           sample = SensorValue(sensor_id = sensor.id, value = randint(0,65535))
           self.db.session.add(sample)
-
-    self.db.session.commit()
+        self.db.session.commit()
