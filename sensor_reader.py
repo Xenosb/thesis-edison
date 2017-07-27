@@ -1,14 +1,17 @@
 import app
 from multiprocessing import Process
+from random import randint
 from time import sleep
 from models import *
 
 class SensorReader(Process):
 
-  def __init__(self):
+  def __init__(self, pipe, active):
     self.name = 'SensorReader'
     self.initialized = False
-    self.active = False
+    self.active = active
+    self.pipe = pipe
+    self.active.value = False
     super(SensorReader, self).__init__()
 
   '''
@@ -26,7 +29,7 @@ class SensorReader(Process):
       self.i2c.frequency(0)
       self.read_f = i2c_read_sensors
     else:
-      self.purge_db() # Comment if you want data to persist
+      #self.purge_db() # Comment if you want data to persist
       if len(SensorValue.query.all()) == 0:
         print('Database empty, adding sample data')
         self.mock_sample_db()
@@ -42,23 +45,33 @@ class SensorReader(Process):
     if not self.initialized:
       self.initialize()
 
-    self.active = True
-    while self.active:
-      self.read_f()
-      sleep(self.update_freq)
+    self.active.value = True
 
+    # Run forever
+    while True:
+      # Read data from the pipe
+      if self.pipe.poll():
+        if self.pipe.recv() == 'stop' and self.active.value == True:
+          self.active.value = False
+          print("stop")
+        if self.pipe.recv() == 'start' and self.active.value == False:
+          self.active.value = True
+          print("start")
 
-  '''
-  Stops the task from running. To restart do sr.run()
-  '''
-  def stop(self):
-    self.active = False
+      # Read data if active
+      if self.active.value:
+        self.read_f()
+        sleep(self.update_freq)
 
 
   '''
   Randoms values from a sensor network.
   '''
   def mock_read_sensors(self):
+    for sensor in Sensor.query.all():
+      reading = SensorValue(sensor.id, randint(0,65535))
+      db.session.add(reading)
+      db.session.commit()
     print(len(SensorValue.query.all()))
 
 
@@ -87,7 +100,6 @@ class SensorReader(Process):
   Inserts sample data to database. Useful for debug.
   '''
   def mock_sample_db(self, n_nodes=4, n_sensors=16, n_samples=50):
-    from random import randint
     for i in range(n_nodes):
       node = Node()
       self.db.session.add(node)

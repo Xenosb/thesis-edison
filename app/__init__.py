@@ -1,6 +1,7 @@
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from multiprocessing import Value, Pipe
 
 flask_app = Flask(__name__, instance_relative_config=True)
 
@@ -13,9 +14,14 @@ db = SQLAlchemy(flask_app)
 
 # Make sure this is executed only once
 if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+  # Prepare pipe and shared status variable
+  parent_pipe, reader_pipe = Pipe()
+  reader_active = Value('d', False)
+
+  # Create a reader process
   from sensor_reader import SensorReader
-  sr = SensorReader()
-  sr.start()
+  reader = SensorReader(reader_pipe, reader_active)
+  reader.start()
 
 # Load views
 from app import views

@@ -11,8 +11,9 @@ class System(): # Note that his is not a db table but just a helper class
     self.nodes.append([node])
 
   def serialize(self):
+    from app import reader
     result = {
-      'size': len(self.nodes)
+      'state': reader.active.value
       }
     for node in self.nodes:
       result[node[0].id] = node[0].serialize()
