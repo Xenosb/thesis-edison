@@ -29,7 +29,7 @@ class SensorReader(Process):
       self.i2c.frequency(0)
       self.read_f = i2c_read_sensors
     else:
-      #self.purge_db() # Comment if you want data to persist
+      #self.purge_db() # Comment if you want data to persist, bear in mind that auto_id is not reset
       if len(SensorValue.query.all()) == 0:
         print('Database empty, adding sample data')
         self.mock_sample_db()
@@ -44,8 +44,6 @@ class SensorReader(Process):
   def run(self, *args, **kwargs):
     if not self.initialized:
       self.initialize()
-
-    self.active.value = True
 
     # Run forever
     while True:

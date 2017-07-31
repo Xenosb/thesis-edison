@@ -52,14 +52,63 @@ def api_service_start():
 @flask_app.route('/api/node')
 def api_node():
   args = request.args
-  if 'id'
-  r_node_id = request.args.get('id', 0, type=int)
-  return jsonify(result=Node.query.filter_by(id=int(r_node_id)).first().serialize())
+  if 'id' in args:
+    r_node_id = args.get('id', 0, type=int)
+
+    if 'readings' in args:
+      r_node_readings = args.get('readings', 0, type=int)
+      return jsonify(result=r_node_readings)
+
+    else:
+      try:
+        return jsonify(result=Node.query.filter_by(id=int(r_node_id)).first().serialize())
+      except AttributeError:
+        return jsonify(result='unknown node id')
+    
+  return jsonify({})
 
 @flask_app.route('/api/sensor')
 def api_sensor():
-  r_sensor_id = request.args.get('id', 0, type=int)
-  try:
-    return jsonify(result=Sensor.query.filter_by(id=int(r_sensor_id)).first().serialize())
-  except:
-    return 'Sensor not available'
+  args = request.args
+  if 'id' in args:
+    r_sensor_id = args.get('id', 0, type=int)
+
+    try:
+      result = Sensor.query.filter_by(id=int(r_sensor_id)).first().serialize()
+      return jsonify(result=result)
+    except:
+      return jsonify(result='unknown sensor id')
+
+
+@flask_app.route('/api/sensor_value')
+def api_sensor_value():
+  args = request.args
+  if 'id' in args:
+    r_sensor_id = args.get('id', 0, type=int)
+
+    try:
+      result = SensorValue.query.filter(SensorValue.sensor_id == r_sensor_id)
+      print(result.first().serialize())
+    except:
+      return jsonify(result='unknown sensor id')
+
+    values = {}
+
+    if 'start' in args:
+      r_start_readings = args.get('start', 0, type=int)
+      result = result.filter(SensorValue.timestamp >= r_start_readings)
+    
+    if 'end' in args:
+      r_end_readings = args.get('end', 0, type=int)
+      result = result.filter(SensorValue.timestamp <= r_end_readings)
+    
+    result = result.all()
+
+    if 'readings' in args:
+      r_sensor_readings = args.get('readings', 0, type=int)
+      result = result[-r_sensor_readings:]
+
+    for reading in result:
+      values[reading.timestamp.strftime('%Y-%m-%d-%H-%M-%S')] = reading.value
+  
+  return jsonify(result = values)

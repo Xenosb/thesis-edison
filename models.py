@@ -107,7 +107,7 @@ class SensorValue(db.Model):
   def serialize(self):
     return {
       'id': self.id,
-      'sensor_id': self.sensor.id,
+      'sensor_id': self.sensor_id,
       'value': self.value,
       'timestamp': self.timestamp
     }
