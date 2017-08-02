@@ -63,17 +63,6 @@ class SensorReader(Process):
 
 
   '''
-  Randoms values from a sensor network.
-  '''
-  def mock_read_sensors(self):
-    for sensor in Sensor.query.all():
-      reading = SensorValue(sensor.id, randint(0,65535))
-      db.session.add(reading)
-      db.session.commit()
-    print(len(SensorValue.query.all()))
-
-
-  '''
   Reads data from actual I2C network. Available only on mraa devices.
   '''
   def i2c_read_sensors(self):
@@ -99,7 +88,7 @@ class SensorReader(Process):
   '''
   def mock_sample_db(self, n_nodes=4, n_sensors=16, n_samples=50):
     for i in range(n_nodes):
-      node = Node()
+      node = Node(i)
       self.db.session.add(node)
       self.db.session.commit()
 
@@ -112,3 +101,20 @@ class SensorReader(Process):
           sample = SensorValue(sensor_id = sensor.id, value = randint(0,65535))
           self.db.session.add(sample)
         self.db.session.commit()
+
+
+  '''
+  Randoms values from a sensor network.
+  '''
+  def mock_read_sensors(self):
+    for sensor in Sensor.query.all():
+      reading = SensorValue(sensor.id, randint(0,65535))
+      sensor.last_value = reading.value
+      sensor.last_update = datetime.now()
+      node = sensor.node
+      node.last_update = datetime.now()
+      db.session.add(reading)
+      db.session.add(sensor)
+      db.session.add(node)
+      db.session.commit()
+    print(len(SensorValue.query.all()))

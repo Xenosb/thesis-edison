@@ -1,6 +1,7 @@
 from flask import render_template, jsonify, request, abort, Response
 from app import flask_app
 from models import *
+from datetime import timedelta
 
 # Error handlers
 @flask_app.errorhandler(404)
@@ -12,7 +13,26 @@ def page_not_found(e):
 @flask_app.route('/')
 @flask_app.route('/index')
 def index():
-  return render_template('index.html')
+  active_nodes = 0
+  active_sensors = 0
+
+  for node in Node.query.all():
+    inactivity = datetime.now() - timedelta(minutes=2)
+
+    print node.last_update
+    print inactivity
+    print inactivity - node.last_update
+
+    if node.last_update > inactivity:
+      active_nodes+=1
+    for sensor in node.sensors:
+      if sensor.last_update > inactivity:
+        active_sensors+=1
+
+  edison = flask_app.config['EDISON']
+
+  return render_template('index.html', \
+    active_nodes=active_nodes, active_sensors=active_sensors, edison=edison)
 
 @flask_app.route('/all_nodes')
 def all_nodes():
@@ -21,7 +41,9 @@ def all_nodes():
 @flask_app.route('/node')
 def node():
   if 'id' in request.args:
-    return render_template('node.html', nodes=Node.query.all(), node = Node.query.filter_by(id = request.args['id']).first())
+    nodes = Node.query.all()
+    node = Node.query.filter_by(id = request.args['id']).first()
+    return render_template('node.html', nodes=nodes, node=node)
 
 @flask_app.route('/sleep_monitor')
 def sleep_monitor():

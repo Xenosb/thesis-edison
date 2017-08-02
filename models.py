@@ -24,17 +24,21 @@ class System(): # Note that his is not a db table but just a helper class
 '''
 ========NODE=========
 id          - Integer
+name        - Integer
 sensors     - ForeignKey(Sensor)
+last_update - DateTime
 =====================
 '''
 class Node(db.Model):
   __tablename__ = 'node'
 
   id = Column(Integer, primary_key=True)
+  name = Column(Integer, default=-1)
+  last_update = Column(DateTime(), default=datetime.utcnow)
   sensors = db.relationship('Sensor', backref='node', lazy="dynamic")
 
-  def __init__(self):
-    pass
+  def __init__(self, name):
+    self.name = name
 
   def __repr__(self):
     return 'Node<id {}>'.format(self.id)
@@ -42,6 +46,8 @@ class Node(db.Model):
   def serialize(self):
     return {
       'id': self.id,
+      'name': self.name,
+      'last_update': self.last_update,
       'sensors': [s.id for s in self.sensors]
     }
 
@@ -52,6 +58,7 @@ id          - Integer
 node_id     - ForeignKey(Node)
 position    - Integer
 last_value  - Integer
+last_update - DateTime
 =====================
 '''
 class Sensor(db.Model):
@@ -59,8 +66,9 @@ class Sensor(db.Model):
 
   id = Column(Integer, primary_key=True)
   node_id = Column(Integer, ForeignKey('node.id'))
-  position = Column(Integer())
-  last_value = Column(Integer())
+  position = Column(Integer(), default=-1)
+  last_value = Column(Integer(), default=0)
+  last_update = Column(DateTime(), default=datetime.now)
   values = db.relationship('SensorValue')
 
   def __init__(self, node_id, position):
@@ -76,9 +84,9 @@ class Sensor(db.Model):
       'id': self.id,
       'node_id': self.node.id,
       'position': self.position,
-      'last_value': self.last_value
+      'last_value': self.last_value,
+      'last_update': self.last_update
     }
-
 
 '''
 ====SENSOR VALUE=====
