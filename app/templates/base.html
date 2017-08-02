@@ -30,7 +30,6 @@
             <li class="nav-item">
                 <a class="nav-link navbar-toggler sidebar-toggler" href="#">☰</a>
             </li>
-
         </ul>
     </header>
 
@@ -39,7 +38,26 @@
             <nav class="sidebar-nav">
                 <ul class="nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html"><i class="icon-speedometer"></i> Dashboard <span class="badge badge-info">NEW</span></a>
+                        <a class="nav-link" href="index"><i class="icon-speedometer"></i> Dashboard </a>
+                    </li>
+                    <li class="nav-item nav-dropdown" id="nav_all_nodes">
+                        <a class="nav-link nav-dropdown-toggle" href="all_nodes"><i class="icon-layers"></i> All nodes </a>
+                        <ul class="nav-dropdown-items">
+                            {% for node in nodes %}
+                                <li class="nav-item">
+                                    <a class="nav-link" id="nav_{{ node.id }}" href="node?id={{ node.id }}"><i class="fa fa-microchip"></i> {{ node.id }} </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="sleep_monitor"><i class="fa fa-bed"></i> Sleep monitor </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings"><i class="icon-settings"></i> Settings </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about"><i class="icon-info"></i> About </a>
                     </li>
 
                 </ul>
@@ -73,10 +91,7 @@
     <!-- Smartbed related js -->
     <script type="text/javascript" src="/static/js/smartbed.js"></script>
 
-    <!-- Plugins and scripts required by this views -->
-
-    <!-- Custom scripts required by this view -->
-    <script src="/static/js/views/index.js"></script>
+    {% block customjs %}{% endblock %}
 
 </body>
 

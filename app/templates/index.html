@@ -1,8 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+
+{% block title %} Smartbed dashboard {% endblock %}
+
 {% block body %}
 
 <div>
-  Sensor: <span id='s1-val'>ABA</span>
+    Sensor: <span id='s1-val'>ABA</span>
 </div>
+
+{% endblock %} 
+
+{% block customjs %}
+
+<script src="/static/js/views/index.js"></script>
+
 {% endblock %}

@@ -14,10 +14,26 @@ def page_not_found(e):
 def index():
   return render_template('index.html')
 
+@flask_app.route('/all_nodes')
+def all_nodes():
+  return render_template('all_nodes.html', nodes=Node.query.all())
+
+@flask_app.route('/node')
+def node():
+  if 'id' in request.args:
+    return render_template('node.html', nodes=Node.query.all(), node = Node.query.filter_by(id = request.args['id']).first())
+
+@flask_app.route('/sleep_monitor')
+def sleep_monitor():
+  return render_template('sleep_monitor.html')
+
+@flask_app.route('/settings')
+def settings():
+  return render_template('settings.html')
+
 @flask_app.route('/about')
 def about():
   return render_template('about.html')
-
 
 # API routes
 @flask_app.route('/api/system')
@@ -88,7 +104,7 @@ def api_sensor_value():
 
     try:
       result = SensorValue.query.filter(SensorValue.sensor_id == r_sensor_id)
-      print(result.first().serialize())
+      result.first().serialize()
     except:
       return jsonify(result='unknown sensor id')
 

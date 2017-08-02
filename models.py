@@ -18,7 +18,6 @@ class System(): # Note that his is not a db table but just a helper class
     for node in self.nodes:
       result[node[0].id] = node[0].serialize()
     
-    print result
     return result
 
 

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %} Node {% endblock %}
+
+{% block body %}
+
+<div>
+    Node
+</div>
+
+{% endblock %} 
+
+{% block customjs %}
+
+<script type="text/javascript">
+$(document).ready(function ($) {
+    $("#nav_all_nodes").addClass('open');
+    $("#nav_{{ node.id }}").addClass('active');
+});
+</script>
+
+{% endblock %}
