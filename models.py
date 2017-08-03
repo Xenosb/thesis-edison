@@ -108,7 +108,7 @@ class SensorValue(db.Model):
     self.value = value
   
   def __repr__(self):
-    return 'Reading<id {} node {} position {} value {} time {}>'.format(self.id, self.sensor.node.id, self.sensor.position, self.value, self.timestamp)
+    return 'Reading<id {} value {} time {}>'.format(self.id, self.value, self.timestamp)
   
   def serialize(self):
     return {

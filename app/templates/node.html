@@ -4,18 +4,48 @@
 
 {% block body %}
 
-<div>
-    Node
+<div class="row">
+{% for sensor in node.sensors | sort(attribute='position') %}
+    <div class="col-sm-6 col-lg-3 sensor-card" id="card-{{ sensor.id }}">
+         <div class="card card-inverse card-info">
+            <div class="card-block pb-0">
+                <div class="btn-group float-right">
+                    <button type="button" class="btn btn-transparent active dropdown-toggle p-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="icon-settings"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </div>
+                <h4 class="mb-0">Sensor {{ sensor.position }}</h4>
+                <h5 id="sensor-value-{{ sensor.position }}">{{ sensor.last_value }}</h5>
+            </div>
+            <div class="chart-wrapper px-3" style="height:70px;">
+                <canvas id="sensor-chart-{{ sensor.position }}" class="chart" height="70"></canvas>
+            </div>
+        </div> 
+    </div>
+{% endfor %}
 </div>
 
 {% endblock %} 
 
 {% block customjs %}
 
+<script>
+    var chart_sample_points = 10;
+    var chart_data_init_url = "api/chart/sensors?id={{node.id}}&len=" + chart_sample_points;
+    var chart_data_update_url = "api/chart/sensors?id={{node.id}}&len=1";
+</script>
+
+<script src="/static/js/views/node.js"></script>
+
 <script type="text/javascript">
-$(document).ready(function ($) {
-    $("#nav_all_nodes").addClass('open');
-    $("#nav_{{ node.id }}").addClass('active');
+    $(document).ready(function ($) {
+        $("#nav_all_nodes").addClass('open');
+        $("#nav_{{ node.id }}").addClass('active');
 });
 </script>
 

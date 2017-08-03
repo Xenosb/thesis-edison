@@ -90,16 +90,11 @@ def api_node():
   if 'id' in args:
     r_node_id = args.get('id', 0, type=int)
 
-    if 'readings' in args:
-      r_node_readings = args.get('readings', 0, type=int)
-      return jsonify(result=r_node_readings)
+    try:
+      return jsonify(result=Node.query.filter_by(id=int(r_node_id)).first().serialize())
+    except AttributeError:
+      return jsonify(result='unknown node id')
 
-    else:
-      try:
-        return jsonify(result=Node.query.filter_by(id=int(r_node_id)).first().serialize())
-      except AttributeError:
-        return jsonify(result='unknown node id')
-    
   return jsonify({})
 
 @flask_app.route('/api/sensor')
@@ -108,12 +103,14 @@ def api_sensor():
   if 'id' in args:
     r_sensor_id = args.get('id', 0, type=int)
 
-    try:
-      result = Sensor.query.filter_by(id=int(r_sensor_id)).first().serialize()
-      return jsonify(result=result)
-    except:
+    if Sensor.query.filter_by(id=r_sensor_id).count() == 0:
       return jsonify(result='unknown sensor id')
 
+    result = Sensor.query.filter_by(id=int(r_sensor_id)).first().serialize()
+    return jsonify(result=result)
+
+  else:
+    return jsonify(result='sensor id not provided')
 
 @flask_app.route('/api/sensor_value')
 def api_sensor_value():
@@ -121,13 +118,11 @@ def api_sensor_value():
   if 'id' in args:
     r_sensor_id = args.get('id', 0, type=int)
 
-    try:
-      result = SensorValue.query.filter(SensorValue.sensor_id == r_sensor_id)
-      result.first().serialize()
-    except:
+    if Sensor.query.filter_by(id=r_sensor_id).count() == 0:
       return jsonify(result='unknown sensor id')
 
     values = {}
+    result = SensorValue.query.filter(SensorValue.sensor_id == r_sensor_id)
 
     if 'start' in args:
       r_start_readings = args.get('start', 0, type=int)
@@ -148,11 +143,36 @@ def api_sensor_value():
   
   return jsonify(result = values)
 
+
+# API routes for charts
 @flask_app.route('/api/chart/histogram')
-def api_charts_histogram():
+def api_chart_histogram():
   result = {}
   nodes = Node.query.filter(Node.last_update > datetime.utcnow() - timedelta(minutes=2)).all()
   for node in nodes:
     for sensor in node.sensors:
       result[sensor.id] = sensor.last_value
   return jsonify(result=result)
+
+@flask_app.route('/api/chart/sensors')
+def api_chart_sensors():
+  if not 'id' in request.args:
+    return jsonify(result='node id not provided')
+
+  if 'len' in request.args:
+    length = request.args.get('len', 0, type=int)
+  else:
+    length = 20
+
+  r_node_id = request.args.get('id', 0, type=int)
+  if Node.query.filter_by(id=r_node_id).count() == 0:
+    return jsonify(result='unknown node id')
+
+  result = {}
+  for sensor in Sensor.query.filter(Sensor.node_id == r_node_id).all():
+    values = SensorValue.query.filter(SensorValue.sensor_id == sensor.id).all()[-length:]
+    result[sensor.position] = []
+    for i in range(length):
+      result[sensor.position] += [values[i].value]
+
+  return jsonify(result)
