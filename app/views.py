@@ -28,8 +28,11 @@ def index():
 
   edison = flask_app.config['EDISON']
 
+  nodes = Node.query.all()
+
   return render_template('index.html', \
-    active_nodes=active_nodes, active_sensors=active_sensors, edison=edison)
+    nodes=nodes, active_nodes=active_nodes, \
+    active_sensors=active_sensors, edison=edison)
 
 @flask_app.route('/all_nodes')
 def all_nodes():
@@ -44,15 +47,15 @@ def node():
 
 @flask_app.route('/sleep_monitor')
 def sleep_monitor():
-  return render_template('sleep_monitor.html')
+  return render_template('sleep_monitor.html', nodes=Node.query.all())
 
 @flask_app.route('/settings')
 def settings():
-  return render_template('settings.html')
+  return render_template('settings.html', nodes=Node.query.all())
 
 @flask_app.route('/about')
 def about():
-  return render_template('about.html')
+  return render_template('about.html', nodes=Node.query.all())
 
 
 # API routes
