@@ -2,6 +2,7 @@ from flask import render_template, jsonify, request, abort, Response
 from app import flask_app
 from models import *
 from datetime import timedelta
+from math import floor
 
 # Error handlers
 @flask_app.errorhandler(404)
@@ -148,10 +149,25 @@ def api_sensor_value():
 @flask_app.route('/api/chart/histogram')
 def api_chart_histogram():
   result = {}
-  nodes = Node.query.filter(Node.last_update > datetime.utcnow() - timedelta(minutes=2)).all()
+  nodes = Node.query.all()
   for node in nodes:
     for sensor in node.sensors:
       result[sensor.id] = sensor.last_value
+  return jsonify(result=result)
+
+@flask_app.route('/api/chart/heatmap')
+def api_chart_heatmap():
+  nodes = Node.query.all()
+  result = []
+  for node in nodes:
+    tmp0 = []
+    tmp1 = []
+    sensors = node.sensors.all()
+    for i in range(len(sensors)/2):
+      tmp0.append(sensors[i].last_value)
+      tmp1.append(sensors[8+i].last_value)
+    result.append(tmp0)
+    result.append(tmp1)
   return jsonify(result=result)
 
 @flask_app.route('/api/chart/sensors')

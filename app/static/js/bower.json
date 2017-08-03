@@ -9,7 +9,7 @@
     "simple-line-icons": "latest",
     "pace": "latest",
     "chart.js": "latest",
-    "anychart": "latest"
+    "plotly": "latest"
   },
   "private": true
 }

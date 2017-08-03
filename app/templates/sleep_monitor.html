@@ -4,7 +4,22 @@
 
 {% block body %}
 
-<div id='sleep_monitor'>
+<div class="card">
+  <div class="card-block">
+    <div class="row">
+      <div class="col-sm-5">
+        <h4 class="card-title mb-0">Bed view</h4>
+        <div class="small text-muted">Sensor value heat map</div>
+      </div>
+      <div id="chart-heatmap" style="width: 100%; height: 700px; margin: 0; padding: 0;"></div>
+    </div>
+  </div>
 </div>
+
+{% endblock %}
+
+{% block customjs %}
+
+<script src="/static/js/views/sleep_monitor.js"></script>
 
 {% endblock %}
