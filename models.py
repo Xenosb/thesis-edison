@@ -13,7 +13,6 @@ class System(): # Note that his is not a db table but just a helper class
   def serialize(self):
     from app import reader
     result = {
-      'state': reader.active.value
       }
     for node in self.nodes:
       result[node[0].id] = node[0].serialize()

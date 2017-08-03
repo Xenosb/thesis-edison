@@ -19,10 +19,6 @@ def index():
   for node in Node.query.all():
     inactivity = datetime.now() - timedelta(minutes=2)
 
-    print node.last_update
-    print inactivity
-    print inactivity - node.last_update
-
     if node.last_update > inactivity:
       active_nodes+=1
     for sensor in node.sensors:
@@ -56,6 +52,7 @@ def settings():
 @flask_app.route('/about')
 def about():
   return render_template('about.html')
+
 
 # API routes
 @flask_app.route('/api/system')
@@ -150,3 +147,12 @@ def api_sensor_value():
       values[reading.timestamp.strftime('%Y-%m-%d-%H-%M-%S')] = reading.value
   
   return jsonify(result = values)
+
+@flask_app.route('/api/chart/histogram')
+def api_charts_histogram():
+  result = {}
+  nodes = Node.query.filter(Node.last_update > datetime.utcnow() - timedelta(minutes=2)).all()
+  for node in nodes:
+    for sensor in node.sensors:
+      result[sensor.id] = sensor.last_value
+  return jsonify(result=result)
