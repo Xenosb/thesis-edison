@@ -2,13 +2,14 @@
   "name": "coreui-ajax",
   "version": "1.0.0-alpha.6",
   "dependencies": {
-    "bootstrap": "4.0.0-alpha.6",
+    "bootstrap": "latest",
     "tether": "latest",
-    "jquery": "^3.0.0",
+    "jquery": "latest",
     "fontawesome": "latest",
     "simple-line-icons": "latest",
     "pace": "latest",
-    "chart.js": "^2.3.0"
+    "chart.js": "latest",
+    "anychart": "latest"
   },
   "private": true
 }

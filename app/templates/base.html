@@ -43,9 +43,9 @@
                     <li class="nav-item nav-dropdown" id="nav_all_nodes">
                         <a class="nav-link nav-dropdown-toggle" href="all_nodes"><i class="icon-layers"></i> All nodes </a>
                         <ul class="nav-dropdown-items">
-                            {% for node in nodes %}
+                            {% for node in nodes | sort(attribute='name') %}
                                 <li class="nav-item">
-                                    <a class="nav-link" id="nav_{{ node.id }}" href="node?id={{ node.id }}"><i class="fa fa-microchip"></i> {{ node.id }} </a>
+                                    <a class="nav-link" id="nav-{{ node.name }}" href="node?id={{ node.name }}"><i class="fa fa-microchip"></i> Node {{ node.name }} </a>
                                 </li>
                             {% endfor %}
                         </ul>
