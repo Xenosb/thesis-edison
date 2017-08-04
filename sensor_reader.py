@@ -1,6 +1,7 @@
 import app
 from multiprocessing import Process
 from random import randint
+from struct import unpack
 from time import sleep
 from models import *
 
@@ -24,7 +25,6 @@ class SensorReader(Process):
     self.read_f = self.mock_read_sensors
 
     if self.edison:
-      from struct import unpack
       from mraa import I2c
       self.i2c = I2c(0)
       self.i2c.frequency(0)
@@ -72,30 +72,37 @@ class SensorReader(Process):
     
   def i2c_read_sensor(self, node_pos, sensor_pos):
     self.i2c.address(node_pos)
-    while True:
+    success = False
+
+    for i in range(5):
       # We need this because bad i2c implementation on mbed
       self.i2c.writeReg(0xaa, 2)
 
       try:
         value = self.i2c.readBytesReg(sensor_pos,2)
-        res = unpack('H',value)[0]
-        print res
-        if res < 65000:
-          sensor = Sensor.query.filter_by(position=sensor_pos).filter_by(node_pos=1).first()
-          reading = SensorValue(sensor.id,res)
-          sensor.last_value = reading.value
-          sensor.last_update = datetime.now()
-          node = sensor.node
-          node.last_update = datetime.now()
-          db.session.add(reading)
-          db.session.add(sensor)
-          db.session.add(node)
-          db.session.commit()
+        res = 65535 - unpack('H',value)[0]
+        if res > 150:
+          print 'bingo'
           success = True
-        if success:
           return
       except IOError:
         pass
+
+    if not success:
+      res = 0
+
+    sensor = Sensor.query.filter_by(position=sensor_pos).filter_by(node_id=1).first()
+    reading = SensorValue(sensor.id,res)
+    sensor.last_value = reading.value
+    sensor.last_update = datetime.now()
+    node = sensor.node
+    node.last_update = datetime.now()
+    db.session.add(reading)
+    db.session.add(sensor)
+    db.session.add(node)
+    db.session.commit()
+    print 1, sensor_pos, res
+
 
   '''
   Clears the database. Useful for debug.
