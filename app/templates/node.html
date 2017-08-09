@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %} Node {% endblock %}
+{% block title %} Node {{node.name}}{% endblock %}
+
+{% block bradcrumb %}
+<li class="breadcrumb-item">Nodes</li>
+<li class="breadcrumb-item active">Node {{node.name}}</li>
+{% endblock %}
 
 {% block body %}
 
