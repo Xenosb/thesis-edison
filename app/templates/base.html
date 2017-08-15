@@ -70,16 +70,28 @@
 
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">Home</li>
-                <li class="breadcrumb-item"><a href="#">Admin</a>
-                </li>
-                <li class="breadcrumb-item active">Dashboard</li>
+                {% block bradcrumb %} {% endblock %}
 
                 <!-- Breadcrumb Menu-->
                 <li class="breadcrumb-menu d-md-down-none">
                     <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                         <a class="btn btn-secondary" href="#"><i class="icon-speech"></i></a>
-                        <a class="btn btn-secondary" href="./"><i class="icon-graph"></i> &nbsp;Dashboard</a>
-                        <a class="btn btn-secondary" href="#"><i class="icon-settings"></i> &nbsp;Settings</a>
+                        <div class="dropdown">
+                            <a class="btn btn-secondary dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="icon-settings"></i>&nbsp;Service
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" href="#"><i class="fa fa-microchip"></i>Edison</a>
+                                <a class="dropdown-item" href="#">
+                                    Active
+                                    <label class="switch switch-default switch-pill switch-primary">
+                                        <input type="checkbox" class="switch-input" checked>
+                                        <span class="switch-label"></span>
+                                        <span class="switch-handle"></span>
+                                    </label>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </li>
             </ol>
