@@ -16,7 +16,7 @@ db = SQLAlchemy(flask_app)
 if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
   # Prepare pipe and shared status variable
   parent_pipe, reader_pipe = Pipe()
-  reader_active = Value('d', False)
+  reader_active = Value('d', 0) # Change to 1 to autostart
 
   # Create a reader process
   from sensor_reader import SensorReader

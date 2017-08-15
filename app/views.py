@@ -70,7 +70,7 @@ def api_system():
 @flask_app.route('/api/service')
 def api_service():
   from app import reader
-  return jsonify({'result': reader.active.value})
+  return jsonify({ 'result': reader.active.value == 1 })
 
 @flask_app.route('/api/service/stop')
 def api_service_stop():
@@ -83,7 +83,7 @@ def api_service_stop():
 @flask_app.route('/api/service/start')
 def api_service_start():
   from app import reader, parent_pipe
-  if not reader.active.value:
+  if reader.active.value == 0:
     parent_pipe.send('start')
     return jsonify({'result': 'success'})
   return jsonify({'result': 'failed'})
