@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import JSON
 
-class System(): # Note that his is not a db table but just a helper class
+class System(): # Note that this is not a db table but just a helper class
   def __init__(self):
     self.nodes = []
 

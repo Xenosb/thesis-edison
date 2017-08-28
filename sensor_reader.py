@@ -25,11 +25,13 @@ class SensorReader(Process):
     self.read_f = self.mock_read_sensors
 
     if self.edison:
-      from mraa import I2c
+      from mraa import I2c, Gpio, DIR_OUT
       self.i2c = I2c(0)
       self.i2c.frequency(0)
       self.i2c.address(0x10)
       self.read_f = self.i2c_read_sensors
+      #self.sense_out = Gpio(14)
+      #self.sense_out.dir(DIR_OUT)
     else:
       #self.purge_db() # Comment if you want data to persist, bear in mind that auto_id is not reset
       if len(SensorValue.query.all()) == 0:
@@ -41,7 +43,7 @@ class SensorReader(Process):
 
 
   '''
-  Starts the celery task. Initializes in case it is needed.
+  Main runner method
   '''
   def run(self, *args, **kwargs):
     if not self.initialized:
@@ -76,11 +78,12 @@ class SensorReader(Process):
     success = False
 
     for i in range(5):
-      # We need this because bad i2c implementation on mbed
+      # We need this because bad i2c implementation on mraa
+      # Problem is that mraa device is not setting the stop bit after it receives the data from the node
       self.i2c.writeReg(0xaa, 2)
 
       try:
-        value = self.i2c.readBytesReg(sensor_pos,2)
+        value = self.i2c.readBytesReg(sensor_pos, 2)
         res = 65535 - unpack('H',value)[0]
         if res > 150:
           success = True
@@ -101,6 +104,32 @@ class SensorReader(Process):
     db.session.add(sensor)
     db.session.add(node)
     db.session.commit()
+
+
+  '''
+  Distributes the I2C addresses to the nodes based on their position
+  '''
+  def distribute_i2c_addresses(self):
+    if not self.edison:
+      print('This is supported only on mraa devices')
+      return
+
+    self.i2c.address(0x00) # Switch to general call address
+    self.i2c.write(0xcd) # Send release i2c address (0xcd)
+    self.sense_out.write(1) # Set position sensing pin to high so that first node can be identified
+    self.i2c.write(0xcd) # Send release i2c address (0xcd)
+
+    i = 1
+    while (set_i2c_address):
+      i += 1
+  
+
+  '''
+  Tries to set the I2C address of the node which has sense_in high
+  In case that this works, it yields true and in case it doesn't it yields false
+  '''
+  def set_i2c_address(self):
+    pass
 
 
   '''

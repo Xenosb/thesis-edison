@@ -129,11 +129,12 @@ def api_sensor_value():
     result = SensorValue.query.filter(SensorValue.sensor_id == r_sensor_id)
 
     if 'start' in args:
-      r_start_readings = args.get('start', 0, type=int)
+      r_start_readings = args.get('start', 0, type=str)
+      print r_start_readings
       result = result.filter(SensorValue.timestamp >= r_start_readings)
     
     if 'end' in args:
-      r_end_readings = args.get('end', 0, type=int)
+      r_end_readings = args.get('end', 0, type=str)
       result = result.filter(SensorValue.timestamp <= r_end_readings)
     
     result = result.all()
