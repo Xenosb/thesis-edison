@@ -70,8 +70,9 @@ class SensorReader(Process):
   Reads data from actual I2C network. Available only on mraa devices.
   '''
   def i2c_read_sensors(self):
-    for i in range(2):
-      self.i2c_read_sensor(16, i)
+    for node_pos in range(17,18):
+      for sensor_pos in range(2):
+        self.i2c_read_sensor(node_pos, sensor_pos)
     
   def i2c_read_sensor(self, node_pos, sensor_pos):
     self.i2c.address(node_pos)
