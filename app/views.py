@@ -174,7 +174,7 @@ def api_chart_heatmap():
     result.append(tmp1)
   return jsonify(result=result)
 
-@flask_app.route('/api/chart/sensors')
+@flask_app.route('/api/chart/node')
 def api_chart_sensors():
   if not 'id' in request.args:
     return jsonify(result='node id not provided')
