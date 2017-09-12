@@ -70,12 +70,48 @@ class SensorReader(Process):
   Reads data from actual I2C network. Available only on mraa devices.
   '''
   def i2c_read_sensors(self):
+    # for regular use
+    for node_pos in range(1,3):
+      self.i2c_read_all_sensors(node_pos)
+
+    # to be used if device has a problem receiving packages
+    '''
     for node_pos in range(1,3):
       for sensor_pos in range(1):
         self.i2c_read_sensor(node_pos, sensor_pos)
+    '''
+
+    # for high precision, not implemented yet
+    '''
+    for node_pos in range(1,3):
+      self.i2c_read_all_sensors_buffered(node_pos)
+    '''
     
+
+  def i2c_read_all_sensors(self, node_pos):
+    self.i2c.address(0x10 + node_pos)
+    self.i2c.writeReg(0xaa, 2)
+    values = self.i2c.readBytesReg(0xa0, 320)
+    for sensor_pos in range(16):
+      res = 65535 - unpack('H', value[sensor_pos*2:sensor_pos*2+2])[0]
+      sensor = Sensor.query.filter_by(position=sensor_pos).filter_by(node_id=node_pos).first()
+      reading = SensorValue(sensor.id, res)
+      sensor.last_value = reading.value
+      sensor.last_update = datetime.now()
+      db.session.add(reading)
+      db.session.add(sensor)
+    db.session.commit()
+
+
+  # Not implemented YET
+  def i2c_read_all_sensors_buffered(self, node_pos):
+    self.i2c.address(0x10 + node_pos)
+    self.i2c.writeReg(0xaa, 2)
+    self.i2c.readBytesReg(0xa1, 640)
+
+
   def i2c_read_sensor(self, node_pos, sensor_pos):
-    self.i2c.address(16 + node_pos)
+    self.i2c.address(0x10 + node_pos)
     success = False
 
     for i in range(5):
@@ -96,14 +132,11 @@ class SensorReader(Process):
       res = 0
 
     sensor = Sensor.query.filter_by(position=sensor_pos).filter_by(node_id=node_pos).first()
-    reading = SensorValue(sensor.id,res)
+    reading = SensorValue(sensor.id, res)
     sensor.last_value = reading.value
     sensor.last_update = datetime.now()
-    node = sensor.node
-    node.last_update = datetime.now()
     db.session.add(reading)
     db.session.add(sensor)
-    db.session.add(node)
     db.session.commit()
 
 
@@ -175,10 +208,7 @@ class SensorReader(Process):
       reading = SensorValue(sensor.id, randint(0,65535))
       sensor.last_value = reading.value
       sensor.last_update = datetime.now()
-      node = sensor.node
-      node.last_update = datetime.now()
       db.session.add(reading)
       db.session.add(sensor)
-      db.session.add(node)
       db.session.commit()
     print(len(SensorValue.query.all()))
