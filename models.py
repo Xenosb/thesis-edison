@@ -1,6 +1,6 @@
 from app import db
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float
 from sqlalchemy.dialects.postgresql import JSON
 
 class System(): # Note that this is not a db table but just a helper class
@@ -56,6 +56,8 @@ class Node(db.Model):
 id          - Integer
 node_id     - ForeignKey(Node)
 position    - Integer
+scale       - Float
+offset      - Integer
 last_value  - Integer
 last_update - DateTime
 =====================
@@ -68,6 +70,8 @@ class Sensor(db.Model):
   position = Column(Integer(), default=-1)
   last_value = Column(Integer(), default=0)
   last_update = Column(DateTime(), default=datetime.now)
+  scale = Column(Float(), default=1.0)
+  offset = Column(Integer(), default=0)
   values = db.relationship('SensorValue')
 
   def __init__(self, node_id, position):
@@ -83,9 +87,12 @@ class Sensor(db.Model):
       'id': self.id,
       'node_id': self.node.id,
       'position': self.position,
+      'scale': self.scale,
+      'offset': self.offset,
       'last_value': self.last_value,
       'last_update': self.last_update
     }
+
 
 '''
 ====SENSOR VALUE=====
@@ -116,4 +123,32 @@ class SensorValue(db.Model):
       'sensor_id': self.sensor_id,
       'value': self.value,
       'timestamp': self.timestamp
+    }
+
+
+'''
+======MARKER========
+id          - Integer
+start       - DateTime
+stop        - DateTime
+description - String
+=====================
+'''
+class Marker(db.Model):
+  __tablename__ = 'Marker'
+
+  id = Column(Integer, primary_key=True)
+  start = Column(DateTime(), default=datetime.utcnow)
+  stop = Column(DateTime())
+  description = Column(String())
+
+  def __repr__(self):
+    return 'Marker<id {} description {} start {} stop {}>'.format(self.id, self.description, self.start, self.stop)
+  
+  def serialize(self):
+    return {
+      'id': self.id,
+      'start': self.start,
+      'stop': self.stop,
+      'description': self.description
     }
