@@ -161,6 +161,16 @@ def api_chart_histogram():
 
 @flask_app.route('/api/chart/heatmap')
 def api_chart_heatmap():
+  # result = [[1409,  2309,   5102,   373,    1268,   2954,   6042,  1008], \
+  #           [1120,  14120,  12420,  8120,   9520,   11820,  8120,  1420], \
+  #           [18285, 42567,  44567,  32567,  40567,  44567,  19567, 16567], \
+  #           [25567, 45567,  47567,  38567,  41567,  43567,  21567, 19567], \
+  #           [21849, 32849,  33849,  28849,  35849,  35849,  16849, 12849], \
+  #           [1317,  2217,   2017,   1997,   1417,   1397,   2017,  1837], \
+  #           [794,   1294,   8794,   1794,   1294,   2594,   1294,  1194], \
+  #           [863,   1363,    763,    893,   1963,   663,    2063,   583], \
+  # ]
+  # return jsonify(result=result)
   nodes = Node.query.all()
   result = []
   for node in nodes:
@@ -190,7 +200,7 @@ def api_chart_sensors():
 
   result = {}
   for sensor in Sensor.query.filter(Sensor.node_id == r_node_id).all():
-    values = SensorValue.query.filter(SensorValue.sensor_id == sensor.id).all()[-length:]
+    values = SensorValue.query.filter(SensorValue.sensor_id == sensor.id).order_by(-SensorValue.timestamp).limit(length).all()
     result[sensor.position] = []
     for i in range(length):
       result[sensor.position] += [values[i].value]
