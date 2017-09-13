@@ -40,6 +40,7 @@ class SensorReader(Process):
         print('Added {} values to database'.format(len(SensorValue.query.all())))
     
     self.initialized = True
+    self.active.value = True
 
 
   '''
@@ -95,7 +96,6 @@ class SensorReader(Process):
     self.i2c.address(0x10 + node_pos)
     self.i2c.writeReg(0xaa, 2)
     values = self.i2c.readBytesReg(0xa0, 32)
-    #print int(values[0]), int(values[1]), unpack('H', values[0:2])[0]
     for sensor_pos in range(16):
       res = 65535 - unpack('H', values[sensor_pos*2:sensor_pos*2+2])[0]
       sensor = Sensor.query.filter_by(position=sensor_pos).filter_by(node_id=node_pos).first()

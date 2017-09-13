@@ -3,7 +3,7 @@ class Config(object):
   EDISON = False
   SECRET_KEY = 'this-really-needs-to-be-changed'
   SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/smartbed-test'
-  UPDATE_FREQ = 0.5
+  UPDATE_FREQ = 0.1
 
 class EdisonProductionConfig(Config):
   DEBUG = True
