@@ -1,6 +1,6 @@
 from app import db
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float, Index
 from sqlalchemy.dialects.postgresql import JSON
 
 class System(): # Note that this is not a db table but just a helper class
@@ -152,3 +152,5 @@ class Marker(db.Model):
       'stop': self.stop,
       'description': self.description
     }
+
+Index('sensor__value_index', SensorValue.timestamp.desc())
