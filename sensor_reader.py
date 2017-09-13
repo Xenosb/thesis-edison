@@ -72,7 +72,10 @@ class SensorReader(Process):
   def i2c_read_sensors(self):
     # for regular use
     for node_pos in range(1,3):
-      self.i2c_read_all_sensors(node_pos)
+      try:
+        self.i2c_read_all_sensors(node_pos)
+      except IOError:
+        print 'Unable to read from node {}'.format(node_pos)
 
     # to be used if device has a problem receiving packages
     '''
@@ -91,9 +94,10 @@ class SensorReader(Process):
   def i2c_read_all_sensors(self, node_pos):
     self.i2c.address(0x10 + node_pos)
     self.i2c.writeReg(0xaa, 2)
-    values = self.i2c.readBytesReg(0xa0, 320)
+    values = self.i2c.readBytesReg(0xa0, 32)
+    #print int(values[0]), int(values[1]), unpack('H', values[0:2])[0]
     for sensor_pos in range(16):
-      res = 65535 - unpack('H', value[sensor_pos*2:sensor_pos*2+2])[0]
+      res = 65535 - unpack('H', values[sensor_pos*2:sensor_pos*2+2])[0]
       sensor = Sensor.query.filter_by(position=sensor_pos).filter_by(node_id=node_pos).first()
       reading = SensorValue(sensor.id, res)
       sensor.last_value = reading.value

@@ -3,6 +3,7 @@ from app import flask_app
 from models import *
 from datetime import timedelta
 from math import floor
+from sqlalchemy import desc
 
 # Error handlers
 @flask_app.errorhandler(404)
@@ -200,7 +201,7 @@ def api_chart_sensors():
 
   result = {}
   for sensor in Sensor.query.filter(Sensor.node_id == r_node_id).all():
-    values = SensorValue.query.filter(SensorValue.sensor_id == sensor.id).order_by(-SensorValue.timestamp).limit(length).all()
+    values = SensorValue.query.filter(SensorValue.sensor_id == sensor.id).order_by(desc(SensorValue.timestamp)).limit(length).all()
     result[sensor.position] = []
     for i in range(length):
       result[sensor.position] += [values[i].value]
