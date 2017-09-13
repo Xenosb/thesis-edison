@@ -1,7 +1,7 @@
 $(document).ready(function($) {
 
   var chart_data = [];
-  for (i=0;i<8;i++) {
+  for (i=0;i<6;i++) {
     chart_data[i] = [];
     for (j=0;j<8;j++) {
       chart_data[i][j] = 0;
@@ -9,7 +9,25 @@ $(document).ready(function($) {
   }
 
   var layout = {
-	  showlegend: false
+    showlegend: false,
+    xaxis: {
+      autorange: true,
+      showgrid: false,
+      zeroline: false,
+      showline: false,
+      autotick: true,
+      ticks: '',
+      showticklabels: false
+    },
+    yaxis: {
+      autorange: true,
+      showgrid: false,
+      zeroline: false,
+      showline: false,
+      autotick: true,
+      ticks: '',
+      showticklabels: false
+    }
   };
   var data = [
     {
@@ -35,7 +53,25 @@ function update_heatmap_values(){
       chart_data = data['result'];
 
       var layout = {
-        showlegend: false
+        showlegend: false,
+        xaxis: {
+          autorange: true,
+          showgrid: false,
+          zeroline: false,
+          showline: false,
+          autotick: true,
+          ticks: '',
+          showticklabels: false
+        },
+        yaxis: {
+          autorange: true,
+          showgrid: false,
+          zeroline: false,
+          showline: false,
+          autotick: true,
+          ticks: '',
+          showticklabels: false
+        }
       };
 
       var data = [

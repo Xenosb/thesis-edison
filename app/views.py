@@ -4,6 +4,7 @@ from models import *
 from datetime import timedelta
 from math import floor
 from sqlalchemy import desc
+from numpy import array, vstack
 
 # Error handlers
 @flask_app.errorhandler(404)
@@ -162,28 +163,16 @@ def api_chart_histogram():
 
 @flask_app.route('/api/chart/heatmap')
 def api_chart_heatmap():
-  # result = [[1409,  2309,   5102,   373,    1268,   2954,   6042,  1008], \
-  #           [1120,  14120,  12420,  8120,   9520,   11820,  8120,  1420], \
-  #           [18285, 42567,  44567,  32567,  40567,  44567,  19567, 16567], \
-  #           [25567, 45567,  47567,  38567,  41567,  43567,  21567, 19567], \
-  #           [21849, 32849,  33849,  28849,  35849,  35849,  16849, 12849], \
-  #           [1317,  2217,   2017,   1997,   1417,   1397,   2017,  1837], \
-  #           [794,   1294,   8794,   1794,   1294,   2594,   1294,  1194], \
-  #           [863,   1363,    763,    893,   1963,   663,    2063,   583], \
-  # ]
-  # return jsonify(result=result)
-  nodes = Node.query.all()
-  result = []
-  for node in nodes:
-    tmp0 = []
-    tmp1 = []
+  ag = []
+  for i in range(2):
+    node = Node.query.filter_by(name=i).first()
     sensors = node.sensors.all()
-    for i in range(len(sensors)/2):
-      tmp0.append(sensors[i].last_value)
-      tmp1.append(sensors[8+i].last_value)
-    result.append(tmp0)
-    result.append(tmp1)
-  return jsonify(result=result)
+    a = [sensors[0].last_value, sensors[1].last_value, sensors[2].last_value, sensors[4].last_value, sensors[5].last_value, sensors[6].last_value]
+    b = [sensors[8].last_value, sensors[10].last_value, sensors[12].last_value, sensors[13].last_value, sensors[14].last_value, sensors[15].last_value]
+    ag.append(vstack((a,b)))
+  nulrow = [0,0,0,0,0,0]
+  result = vstack((ag[0],ag[1],nulrow,nulrow,nulrow,nulrow))
+  return jsonify(result=result.transpose().tolist())
 
 @flask_app.route('/api/chart/node')
 def api_chart_sensors():
